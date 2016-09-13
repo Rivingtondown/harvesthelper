@@ -1,0 +1,7 @@
+﻿.DS_Store
+._.DS_Store
+.DS_Store?
+robots.txt
+Thumbs.db
+node_modules/*
+logs/*
