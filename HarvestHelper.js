@@ -69,7 +69,7 @@ Game_System.prototype.createHarvestable = function (value, eventID, mapID) {
   if (HarvestType == "Forage" && HarvestLvl > CraftLvl) {
     //if you're foraging AND the plant is higher level than your foraging lvl
     $gameMessage.add( //create a message
-    CraftType + " level too low \n" + "Required level: " + HarvestLvl + "\n" + "Current level: " + CraftLvl + "\n");
+    CraftType + " level too low to forage "+$gameMap.event(eventID).event().name.toLowerCase()+"\n" + "Required level: " + HarvestLvl + "\n" + "Current level: " + CraftLvl + "\n");
     return; //cancel out of the script
   } else {
     //otherwise, assuming your are either farming or you're foraging but the plant is not higher level
@@ -92,7 +92,7 @@ Game_System.prototype.createHarvestable = function (value, eventID, mapID) {
         bonusSuccess = (CraftLvl - HarvestLvl) * 10; //generate percentage chance based on level difference
         if (random < bonusSuccess) {
           //if you suceed at that chance
-          AudioManager.playSe({ name: "Jump", volume: 100, pitch: 100, pan: 0, pos: 0 }); //play bonus gain sfx
+          AudioManager.playSe({ name: "Item3", volume: 100, pitch: 100, pan: 0, pos: 0 }); //play bonus gain sfx
           $gameParty.gainItem($dataItems[3], 1); //gain bonus item
           console.log("Gained 1 bonus item with a " + bonusSuccess + "% chance");
         }
@@ -134,10 +134,12 @@ Game_System.prototype.plowPlot = function (value, eventID, mapID) {
   HarvestLvl = parseInt(value[0]); //level of the crop you're harvesting
   HarvestItem = parseInt(value[1]); //item code of the crop you're harvesting
 
+  CraftLvl = $gameVariables.value(8);
+
   if (HarvestLvl > CraftLvl) {
     //if the crop is too high level for you to harvest
     $gameMessage.add( //create a message
-    "Farming level too low \n" + "Required level: " + HarvestLvl + "\n" + "Current level: " + CraftLvl + "\n");
+    "Farming level too low to grow "+$gameMap.event(eventID).event().name.toLowerCase()+"\n" + "Required level: " + HarvestLvl + "\n" + "Current level: " + CraftLvl + "\n");
     $gameMessage.add("Clear plot?"); //generate an option to clear the plot
     $gameMessage.setChoices(['Yes', 'No'], 0, -1);
     $gameMessage.setChoiceCallback(function (choice) {
@@ -155,3 +157,24 @@ Game_System.prototype.plowPlot = function (value, eventID, mapID) {
     $gameVariables.setValue(10, $gameVariables.value(10) - 1); //lower your gardening tools durability by 1
   }
 };
+Game_System.prototype.plantPlots = function (value, eventID, mapID) {
+  $gameMessage.add("What will you plant?");
+  $gameMessage.setChoices([value[0], value[1], value[2], value[3], "Cancel"], 0, 1, 2, 3, -1);
+  $gameMessage.setChoiceCallback(function (choice) {
+    if (choice == 0) {
+      $gameMap.spawnMapEventFrom(19, 1, 11, false);
+    }
+    if (choice == 1) {
+      $gameMap.spawnMapEventFrom(19, 2, 11, false);
+    }
+    if (choice == 2) {
+      $gameMap.spawnMapEventFrom(19, 3, 11, false);
+    }
+    if (choice == 3) {
+      $gameMap.spawnMapEventFrom(19, 4, 11, false);
+    }
+    if (choice == -1) {
+      return;
+    }
+  });
+}
